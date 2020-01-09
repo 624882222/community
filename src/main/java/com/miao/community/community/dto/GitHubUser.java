@@ -28,4 +28,13 @@ public class GitHubUser {
     public void setIdo(String ido) {
         this.ido = ido;
     }
+
+    @Override
+    public String toString() {
+        return "GitHubUser{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", ido='" + ido + '\'' +
+                '}';
+    }
 }
