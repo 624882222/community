@@ -51,15 +51,20 @@ http://localhost:8887
 
 ## 脚本
 ```sql
-CREATE TABLE USER
+-----用户表-------
+create table USER
 (
-    ID int AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    ACCOUNT_ID VARCHAR(100),
-    NAME VARCHAR(50),
-    TOKEN VARCHAR(36),
-    GMT_CREATE BIGINT,
-    GMT_MODIFIED BIGINT
+    ID           INT auto_increment,
+    ACCOUNT_ID   VARCHAR(100),
+    NAME         VARCHAR(50),
+    TOKEN        CHAR(36),
+    GMT_CREAT    BIGINT,
+    GMT_MODIFIED BIGINT,
+    constraint USER_PK
+        primary key (ID)
 );
+
+
 ```
 ```bash
 mvn flyway:migrate
