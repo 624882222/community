@@ -1,10 +1,10 @@
-package com.miao.community.community.model;
+package com.miao.community.community.dto;
 
+import com.miao.community.community.model.User;
 import lombok.Data;
 
 @Data
-public class Question
-{
+public class QuestionDTO {
     private String title;
     private String description;
     private Long gmtCreate;
@@ -14,4 +14,5 @@ public class Question
     private int viewCount;
     private int likeCount;
     private String tag;
+    User user;
 }
