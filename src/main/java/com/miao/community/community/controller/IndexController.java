@@ -1,6 +1,7 @@
 package com.miao.community.community.controller;
 
 import com.miao.community.community.Service.QuestionService;
+import com.miao.community.community.dto.PaginationDTO;
 import com.miao.community.community.dto.QuestionDTO;
 import com.miao.community.community.mapper.QuestionMapper;
 import com.miao.community.community.mapper.UserMapper;
@@ -28,20 +29,21 @@ public class IndexController {
     private QuestionService questionService;
 
 
-
     /**
      * 主页面
+     *
      * @return
      */
     @GetMapping("/")
     public String index(HttpServletRequest request,
-                        Model model){
-
+                        Model model,
+                        @RequestParam(name = "page", defaultValue = "1") Integer page,
+                        @RequestParam(name = "size", defaultValue = "3") Integer size) {
 
         Cookie[] cookies = request.getCookies();
 
-        if (cookies != null && cookies.length != 0){
-            for (Cookie cookie: cookies) {
+        if (cookies != null && cookies.length != 0) {
+            for (Cookie cookie : cookies) {
                 if ("token".equals(cookie.getName())) {
 
                     String value = cookie.getValue();
@@ -56,13 +58,9 @@ public class IndexController {
             }
         }
 
-        List<QuestionDTO> questionList =  questionService.selectQuestionList();
+        PaginationDTO questionList = questionService.selectQuestionList(page, size);
 
         model.addAttribute("questions", questionList);
-
-
-
-
         return "index";
     }
 }

@@ -1,11 +1,12 @@
 package com.miao.community.community.Service.impl;
 
 import com.miao.community.community.Service.QuestionService;
+import com.miao.community.community.dto.PaginationDTO;
 import com.miao.community.community.dto.QuestionDTO;
 import com.miao.community.community.mapper.QuestionMapper;
 import com.miao.community.community.mapper.UserMapper;
 import com.miao.community.community.model.Question;
-import jdk.nashorn.internal.ir.ForNode;
+import javafx.scene.control.Pagination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,13 @@ public class QuestionServiceImpl implements QuestionService {
     private QuestionMapper questionMapper;
 
     @Override
-    public List<QuestionDTO> selectQuestionList() {
-        List<Question> questionList = questionMapper.getQuestionList();
+    public PaginationDTO selectQuestionList(Integer page, Integer size) {
+
+        PaginationDTO paginationDTO = new PaginationDTO();
+        Integer offset = (page - 1) * size;
+
+        List<Question> questionList = questionMapper.getQuestionList(offset, size);
+
         List<QuestionDTO> questionDTOList = new ArrayList<>();
         if (questionList != null && questionList.size() != 0) {
             for (Question question: questionList) {
@@ -33,7 +39,10 @@ public class QuestionServiceImpl implements QuestionService {
                 questionDTOList.add(questionDTO);
             }
         }
+        paginationDTO.setQuestionDTOList(questionDTOList);
+        Integer totalCount = questionMapper.getCount();
+        paginationDTO.setPagination(page, size, totalCount);
 
-        return questionDTOList;
+        return paginationDTO;
     }
 }
