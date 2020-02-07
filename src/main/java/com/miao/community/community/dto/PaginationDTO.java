@@ -21,23 +21,9 @@ public class PaginationDTO {
     private Integer totalPage;
 
 
-    public void setPagination(Integer page, Integer size, Integer totalCount) {
+    public void setPagination(Integer page, Integer totalPage) {
 
-
-        // 计算一共多少页
-        if (totalCount % size == 0) {
-            totalPage = totalCount / size;
-        } else {
-            totalPage = totalCount / size + 1;
-        }
-
-        if (page < 1){
-            page = 1;
-        }
-
-        if (page > totalPage){
-            page = totalPage;
-        }
+        this.totalPage = totalPage;
 
         this.page = page;
 

@@ -6,7 +6,6 @@ import com.miao.community.community.dto.QuestionDTO;
 import com.miao.community.community.mapper.QuestionMapper;
 import com.miao.community.community.mapper.UserMapper;
 import com.miao.community.community.model.Question;
-import javafx.scene.control.Pagination;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +25,24 @@ public class QuestionServiceImpl implements QuestionService {
     public PaginationDTO selectQuestionList(Integer page, Integer size) {
 
         PaginationDTO paginationDTO = new PaginationDTO();
+
+        Integer totalPage;
+        Integer totalCount = questionMapper.getCount();
+
+        // 计算一共多少页
+        if (totalCount % size == 0) {
+            totalPage = totalCount / size;
+        } else {
+            totalPage = totalCount / size + 1;
+        }
+
+        if (page < 1){
+            page = 1;
+        }
+
+        if (page > totalPage){
+            page = totalPage;
+        }
         Integer offset = (page - 1) * size;
 
         List<Question> questionList = questionMapper.getQuestionList(offset, size);
@@ -40,8 +57,7 @@ public class QuestionServiceImpl implements QuestionService {
             }
         }
         paginationDTO.setQuestionDTOList(questionDTOList);
-        Integer totalCount = questionMapper.getCount();
-        paginationDTO.setPagination(page, size, totalCount);
+        paginationDTO.setPagination(page, totalPage);
 
         return paginationDTO;
     }
@@ -50,6 +66,22 @@ public class QuestionServiceImpl implements QuestionService {
     public PaginationDTO selectListById(Integer userId,Integer page, Integer size) {
 
         PaginationDTO paginationDTO = new PaginationDTO();
+        Integer totalPage;
+        Integer totalCount = questionMapper.getCountById(userId);
+        // 计算一共多少页
+        if (totalCount % size == 0) {
+            totalPage = totalCount / size;
+        } else {
+            totalPage = totalCount / size + 1;
+        }
+
+        if (page < 1){
+            page = 1;
+        }
+
+        if (page > totalPage){
+            page = totalPage;
+        }
         Integer offset = (page - 1) * size;
 
         List<Question> questionList = questionMapper.getQuestionListById(userId, offset, size);
@@ -65,8 +97,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         paginationDTO.setQuestionDTOList(questionDTOList);
-        Integer totalCount = questionMapper.getCountById(userId);
-        paginationDTO.setPagination(page, size, totalCount);
+        paginationDTO.setPagination(page, totalPage);
         return paginationDTO;
     }
 }
