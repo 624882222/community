@@ -2,25 +2,20 @@ package com.miao.community.community.controller;
 
 import com.miao.community.community.Service.QuestionService;
 import com.miao.community.community.dto.PaginationDTO;
-import com.miao.community.community.dto.QuestionDTO;
-import com.miao.community.community.mapper.QuestionMapper;
 import com.miao.community.community.mapper.UserMapper;
-import com.miao.community.community.model.Question;
 import com.miao.community.community.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
-public class IndexController {
+public class ProfileController {
 
     @Autowired
     private UserMapper userMapper;
@@ -28,18 +23,13 @@ public class IndexController {
     @Autowired
     private QuestionService questionService;
 
-
-    /**
-     * 主页面
-     *
-     * @return
-     */
-    @GetMapping("/")
-    public String index(HttpServletRequest request,
-                        Model model,
-                        @RequestParam(name = "page", defaultValue = "1") Integer page,
-                        @RequestParam(name = "size", defaultValue = "3") Integer size) {
-
+    @GetMapping("/profile/{action}")
+    public String profile(HttpServletRequest request,
+                          @PathVariable(name = "action") String action,
+                          Model model,
+                          @RequestParam(name = "page", defaultValue = "1") Integer page,
+                          @RequestParam(name = "size", defaultValue = "3") Integer size) {
+        User user = null;
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null && cookies.length != 0) {
@@ -48,7 +38,7 @@ public class IndexController {
 
                     String value = cookie.getValue();
 
-                    User user = userMapper.findByToken(value);
+                    user = userMapper.findByToken(value);
 
                     if (user != null) {
                         request.getSession().setAttribute("gitHubUser", user);
@@ -57,11 +47,24 @@ public class IndexController {
                 }
             }
         }
+        if (user == null) {
+            return "redirect:/";
+        }
 
-        
-        PaginationDTO questionList = questionService.selectQuestionList(page, size);
+        if ("questions".equals(action)) {
+            model.addAttribute("section", "questions");
+            model.addAttribute("sectionName", "我的问题");
+        }
+        if ("replies".equals(action)) {
+            model.addAttribute("section", "replies");
+            model.addAttribute("sectionName", "我的回复");
+        }
 
-        model.addAttribute("questions", questionList);
-        return "index";
+        PaginationDTO paginationDTO = questionService.selectListById(user.getId(), page, size);
+
+        model.addAttribute("questions",paginationDTO);
+
+        return "profile";
     }
+
 }

@@ -45,4 +45,28 @@ public class QuestionServiceImpl implements QuestionService {
 
         return paginationDTO;
     }
+
+    @Override
+    public PaginationDTO selectListById(Integer userId,Integer page, Integer size) {
+
+        PaginationDTO paginationDTO = new PaginationDTO();
+        Integer offset = (page - 1) * size;
+
+        List<Question> questionList = questionMapper.getQuestionListById(userId, offset, size);
+
+        List<QuestionDTO> questionDTOList = new ArrayList<>();
+        if (questionList != null && questionList.size() != 0) {
+            for (Question question: questionList) {
+                QuestionDTO questionDTO = new QuestionDTO();
+                BeanUtils.copyProperties(question, questionDTO);
+                questionDTO.setUser(userMapper.findById(question.getCreator()));
+                questionDTOList.add(questionDTO);
+            }
+        }
+
+        paginationDTO.setQuestionDTOList(questionDTOList);
+        Integer totalCount = questionMapper.getCountById(userId);
+        paginationDTO.setPagination(page, size, totalCount);
+        return paginationDTO;
+    }
 }
