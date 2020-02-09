@@ -112,4 +112,22 @@ public class QuestionServiceImpl implements QuestionService {
         questionDTO.setUser(user);
         return questionDTO;
     }
+
+    @Override
+    public void createOrUpdate(Question question) {
+
+        if (question.getId() ==null) {
+            question.setGmtCreate(System.currentTimeMillis());
+            question.setGmtModified(question.getGmtCreate());
+            questionMapper.create(question);
+        } else {
+            Question dBQuestion = questionMapper.selectById(question.getId());
+            dBQuestion.setTitle(question.getTitle());
+            dBQuestion.setDescription(question.getDescription());
+            dBQuestion.setGmtModified(System.currentTimeMillis());
+            dBQuestion.setTag(question.getTag());
+            questionMapper.updateById(dBQuestion);
+        }
+
+    }
 }
