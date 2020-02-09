@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.image.TileObserver;
-import java.util.Date;
 
 @Controller
 public class PublishController {
@@ -55,34 +52,16 @@ public class PublishController {
             model.addAttribute("error", "标签不能为空！");
             return "publish";
         }
-        // 获得用户ID
-        Cookie[] cookies = request.getCookies();
-        User user = null;
-
-        if (cookies != null && cookies.length != 0){
-            for (Cookie cookie: cookies) {
-                if ("token".equals(cookie.getName())) {
-
-                    String value = cookie.getValue();
-
-                    user = userMapper.findByToken(value);
-
-                    if (user != null) {
-                        request.getSession().setAttribute("gitHubUser", user);
-                    }
-                    break;
-                }
-            }
-        }
+        User gitHubUser = (User)request.getSession().getAttribute("gitHubUser");
         // 添加数据
-        if (user != null) {
+        if (gitHubUser != null) {
             Question question = new Question();
             question.setTitle(title);
             question.setDescription(description);
             question.setTag(tag);
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
-            question.setCreator(user.getId());
+            question.setCreator(gitHubUser.getId());
             questionMapper.create(question);
             return "redirect:/";
         } else {

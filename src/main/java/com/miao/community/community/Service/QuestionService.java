@@ -9,4 +9,6 @@ public interface QuestionService {
     public PaginationDTO selectQuestionList(Integer page, Integer size);
 
     PaginationDTO selectListById(Integer userId,Integer page, Integer size);
+
+    QuestionDTO selectById(Integer id);
 }

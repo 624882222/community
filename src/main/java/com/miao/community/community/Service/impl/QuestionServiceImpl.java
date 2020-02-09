@@ -6,6 +6,7 @@ import com.miao.community.community.dto.QuestionDTO;
 import com.miao.community.community.mapper.QuestionMapper;
 import com.miao.community.community.mapper.UserMapper;
 import com.miao.community.community.model.Question;
+import com.miao.community.community.model.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -99,5 +100,16 @@ public class QuestionServiceImpl implements QuestionService {
         paginationDTO.setQuestionDTOList(questionDTOList);
         paginationDTO.setPagination(page, totalPage);
         return paginationDTO;
+    }
+
+    @Override
+    public QuestionDTO selectById(Integer id) {
+        QuestionDTO questionDTO = new QuestionDTO();
+        Question questions = questionMapper.selectById(id);
+        BeanUtils.copyProperties(questions,questionDTO);
+        User user = userMapper.findById(questions.getCreator());
+
+        questionDTO.setUser(user);
+        return questionDTO;
     }
 }
