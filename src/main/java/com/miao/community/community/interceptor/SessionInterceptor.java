@@ -2,6 +2,7 @@ package com.miao.community.community.interceptor;
 
 import com.miao.community.community.mapper.UserMapper;
 import com.miao.community.community.model.User;
+import com.miao.community.community.model.UserExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Service
 public class SessionInterceptor implements HandlerInterceptor {
@@ -28,10 +30,12 @@ public class SessionInterceptor implements HandlerInterceptor {
 
                     String value = cookie.getValue();
 
-                    User user = userMapper.findByToken(value);
+                    UserExample example = new UserExample();
+                    example.createCriteria().andTokenEqualTo(value);
+                    List<User> user = userMapper.selectByExample(example);
 
-                    if (user != null) {
-                        request.getSession().setAttribute("gitHubUser", user);
+                    if (user.size() != 0) {
+                        request.getSession().setAttribute("gitHubUser", user.get(0));
                     }
                     break;
                 }
